@@ -39,11 +39,11 @@ module Rakismet
     def validate_key
       validate_config
       akismet = URI.parse(verify_url)
-      _, valid = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
+      valid = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
         data = "key=#{Rakismet.key}&blog=#{Rakismet.url}"
         http.post(akismet.path, data, Rakismet.headers)
       end
-      @valid_key = (valid == 'valid')
+      @valid_key = (valid.body == 'valid')
     end
 
     def valid_key?
@@ -54,11 +54,11 @@ module Rakismet
       validate_config
       args.merge!(:blog => Rakismet.url)
       akismet = URI.parse(call_url(function))
-      _, response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
+      response = Net::HTTP::Proxy(proxy_host, proxy_port).start(akismet.host) do |http|
         data = args.map { |k,v| "#{k}=#{CGI.escape(v.to_str)}" }.join('&')
         http.post(akismet.path, data, Rakismet.headers)
       end
-      response
+      response.body
     end
 
     protected

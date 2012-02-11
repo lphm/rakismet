@@ -9,3 +9,4 @@ rdoc
 pkg
 Gemfile.lock
 .bundle
+.idea
